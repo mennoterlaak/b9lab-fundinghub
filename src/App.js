@@ -15,7 +15,6 @@ import ProjectToolbar from './ToolBar'
 injectTapEventPlugin()
 
 export default class App extends Component {
-
   render() {
     return (
       	<MuiThemeProvider>
@@ -24,7 +23,7 @@ export default class App extends Component {
           <ProjectToolbar/>
       		<Switch>
       			<Route exact path='/' component={ProjectList} />
-            <Route exact path='/List' component={ProjectList} />
+            <Route path='/List' component={ProjectList} />
       			<Route path='/Add' component={AddProject} />
       		</Switch>
     	  	</div>
