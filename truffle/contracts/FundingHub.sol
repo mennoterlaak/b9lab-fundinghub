@@ -7,10 +7,9 @@ contract FundingHub {
   address[] projects;
 
   event ProjectCreated(address projectAtAddress);
-  event ProjectClosed(bool projectIsClosed);
 
-  function createProject(string projectName, address ifSuccessfulSendTo, uint fundingGoalInEthers, uint durationInMinutes) returns (address) {
-    address newProject = new Project(projectName, ifSuccessfulSendTo, fundingGoalInEthers, durationInMinutes);
+  function createProject(string projectName, address ifSuccessfulSendTo, uint fundingGoalInEthers, uint durationInSeconds) returns (address) {
+    address newProject = new Project(projectName, ifSuccessfulSendTo, fundingGoalInEthers, durationInSeconds);
     projects.push(newProject);
     ProjectCreated(newProject);
     return newProject;
@@ -21,9 +20,8 @@ contract FundingHub {
   }
 
   function contribute(address projectAddress) payable {
+    require(msg.value > 0);
     Project project = Project(projectAddress);
-    if(project.fund.value(msg.value)(msg.sender) == false){
-      ProjectClosed(true);
-    }
+    project.fund.value(msg.value)(msg.sender);
   }
 }

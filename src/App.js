@@ -17,17 +17,17 @@ injectTapEventPlugin()
 export default class App extends Component {
   render() {
     return (
-      	<MuiThemeProvider>
-      		<div>
-      		<AppBarProject />
+      <MuiThemeProvider>
+        <div>
+          <AppBarProject/>
           <ProjectToolbar/>
-      		<Switch>
-      			<Route exact path='/' component={ProjectList} />
-            <Route path='/List' component={ProjectList} />
-      			<Route path='/Add' component={AddProject} />
-      		</Switch>
-    	  	</div>
-  		</MuiThemeProvider>
+          <Switch>
+            <Route exact path='/' component={ProjectList}/>
+            <Route path='/List' component={ProjectList}/>
+            <Route path='/Add' component={AddProject}/>
+          </Switch>
+        </div>
+      </MuiThemeProvider>
     )
   }
 }

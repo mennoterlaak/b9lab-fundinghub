@@ -29,37 +29,28 @@ contract Project {
         _;
     }
 
-    function Project(string projectName, address ifGoalReachedSentTo, uint fundingGoalInEthers, uint durationInMinutes) {
+    function Project(string projectName, address ifGoalReachedSentTo, uint fundingGoalInEthers, uint durationInSeconds) {
         projectState.beneficiary = ifGoalReachedSentTo;
         projectState.projectName = projectName;
         projectState.fundingGoal =  fundingGoalInEthers * 1 ether;
-        projectState.deadline = now + durationInMinutes;
-        projectState.amountRaised = 0;
-        projectState.fundingGoalReached = false;
+        projectState.deadline = now + durationInSeconds;
     }
 
-    function getDetails() returns (bool, uint, string){
+    function getDetails() constant returns (bool, uint, string){
         bool _fundingGoalReached = projectState.fundingGoalReached;
         uint _deadline = projectState.deadline;
         string _projectName = projectState.projectName;
-
         return (_fundingGoalReached, _deadline, _projectName);
     }
 
-    function fund(address _contributor) payable returns (bool){
+    function fund(address _contributor) payable returns (bool success){
+        require(now < projectState.deadline);
+        require(!projectState.fundingGoalReached);
+        require(msg.value > 0);
+
         uint amount = msg.value;
         address contributor = _contributor;
         uint toBeAmount = projectState.amountRaised + amount;
-
-        if(now > projectState.deadline){
-            contributor.transfer(msg.value);
-            return false;
-        }
-
-        if(projectState.fundingGoalReached == true){
-            contributor.transfer(msg.value);
-            return false;
-        }
 
         if(toBeAmount >= projectState.fundingGoal) {
             projectState.balanceOf[contributor] += amount;

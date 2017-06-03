@@ -1,7 +1,4 @@
-import { observable }  from 'mobx'
+import {observable} from 'mobx'
 
-const Account = observable({
-  @observable balance : 0
-
-})
+const Account = observable({@observable balance: 0})
 export default Account
