@@ -29,18 +29,19 @@ contract Project {
         _;
     }
 
-    function Project(string projectName, address ifGoalReachedSentTo, uint fundingGoalInEthers, uint durationInSeconds) {
+    function Project(string projectName, address ifGoalReachedSentTo, uint fundingGoalInWei, uint durationInSeconds) {
         projectState.beneficiary = ifGoalReachedSentTo;
         projectState.projectName = projectName;
-        projectState.fundingGoal =  fundingGoalInEthers * 1 ether;
+        projectState.fundingGoal =  fundingGoalInWei;
         projectState.deadline = now + durationInSeconds;
     }
 
-    function getDetails() constant returns (bool, uint, string){
+    function getDetails() constant returns (bool, uint, string, uint){
         bool _fundingGoalReached = projectState.fundingGoalReached;
         uint _deadline = projectState.deadline;
         string _projectName = projectState.projectName;
-        return (_fundingGoalReached, _deadline, _projectName);
+        uint _fundingGoal = projectState.fundingGoal;
+        return (_fundingGoalReached, _deadline, _projectName, _fundingGoal);
     }
 
     function fund(address _contributor) payable returns (bool success){

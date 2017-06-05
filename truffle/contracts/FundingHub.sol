@@ -8,8 +8,8 @@ contract FundingHub {
 
   event ProjectCreated(address projectAtAddress);
 
-  function createProject(string projectName, address ifSuccessfulSendTo, uint fundingGoalInEthers, uint durationInSeconds) returns (address) {
-    address newProject = new Project(projectName, ifSuccessfulSendTo, fundingGoalInEthers, durationInSeconds);
+  function createProject(string projectName, address ifSuccessfulSendTo, uint fundingGoalInWei, uint durationInSeconds) returns (address) {
+    address newProject = new Project(projectName, ifSuccessfulSendTo, fundingGoalInWei, durationInSeconds);
     projects.push(newProject);
     ProjectCreated(newProject);
     return newProject;

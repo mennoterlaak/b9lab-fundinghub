@@ -10,7 +10,6 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 import AppBarProject from './AppBarProject'
 import AddProject from './AddProject'
 import ProjectList from './ProjectList'
-import ProjectToolbar from './ToolBar'
 
 injectTapEventPlugin()
 
@@ -20,7 +19,6 @@ export default class App extends Component {
       <MuiThemeProvider>
         <div>
           <AppBarProject/>
-          <ProjectToolbar/>
           <Switch>
             <Route exact path='/' component={ProjectList}/>
             <Route path='/List' component={ProjectList}/>

@@ -3,10 +3,9 @@ import React from 'react'
 import {Redirect} from 'react-router'
 
 // Material UI
-import {Step, Stepper, StepLabel} from 'material-ui/Stepper'
+import {Step, Stepper, StepButton, StepContent} from 'material-ui/Stepper'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
-import ExpandTransition from 'material-ui/internal/ExpandTransition'
 import TextField from 'material-ui/TextField'
 
 // Ethereum
@@ -19,16 +18,16 @@ class AddProject extends React.Component {
     finished: false,
     stepIndex: 0,
     projectName: '',
-    fundingGoalInEthers: '',
-    durationInMintues: ''
+    fundingGoalInEthers: 0,
+    durationInSeconds: ''
   }
 
   handleChangeEthers = (event) => {
-    this.setState({fundingGoalInEthers: event.target.value})
+    this.setState({fundingGoalInEthers: Number(event.target.value)})
   }
 
-  handleChangeMinutes = (event) => {
-    this.setState({durationInMintues: event.target.value})
+  handleChangeSeconds = (event) => {
+    this.setState({durationInSeconds: event.target.value})
   }
 
   handleChangeName = (event) => {
@@ -37,7 +36,8 @@ class AddProject extends React.Component {
 
   submitHandler = () => {
     EthereumClient.fundinghub.deployed().then((instance) => {
-      instance.createProject(this.state.projectName, EthereumClient.fromAccount, this.state.fundingGoalInEthers, this.state.durationInMintues).then(result => {
+      instance.createProject(this.state.projectName, EthereumClient.fromAccount, EthereumClient.web3.toWei(this.state.fundingGoalInEthers, 'ether'), this.state.durationInSeconds).then(result => {
+        console.log(result)
         this.setState({redirect: true})
       })
     })
@@ -52,126 +52,102 @@ class AddProject extends React.Component {
   }
 
   handleNext = () => {
-    const {stepIndex} = this.state
-    if (!this.state.loading) {
-      this.dummyAsync(() => this.setState({
-        loading: false,
-        stepIndex: stepIndex + 1,
-        finished: stepIndex >= 2
-      }))
-    }
-  }
+      const {stepIndex} = this.state;
+      if (stepIndex < 2) {
+        this.setState({stepIndex: stepIndex + 1});
+      }
+    };
 
-  handlePrev = () => {
-    const {stepIndex} = this.state
-    if (!this.state.loading) {
-      this.dummyAsync(() => this.setState({
-        loading: false,
-        stepIndex: stepIndex - 1
-      }))
-    }
-  }
+    handlePrev = () => {
+      const {stepIndex} = this.state;
+      if (stepIndex > 0) {
+        this.setState({stepIndex: stepIndex - 1});
+      }
+    };
 
-  getStepContent(stepIndex) {
-    switch (stepIndex) {
-      case 0:
-        return (
-          <div>
-            <TextField style={{
-              marginTop: 0
-            }} floatingLabelText="Name" onChange={this.handleChangeName}/>
-            <h4 style={{
-              fontFamily: 'Helvetica'
-            }}>Give your project a title</h4>
-          </div>
-        )
-      case 1:
-        return (
-          <div>
-            <TextField style={{
-              marginTop: 0
-            }} floatingLabelText="Funding Goal" onChange={this.handleChangeEthers}/>
-            <h4 style={{
-              fontFamily: 'Helvetica'
-            }}>
-              Specify the funding goal for the project in ethers.
-            </h4>
-          </div>
-        )
-      case 2:
-        return (
-          <div>
-            <TextField style={{
-              marginTop: 0
-            }} floatingLabelText="Duration" onChange={this.handleChangeMinutes}/>
-            <h4 style={{
-              fontFamily: 'Helvetica'
-            }}>
-              Specify the duration of the project in seconds.
-            </h4>
-          </div>
-        )
-      default:
-        return <h4 style={{
-          fontFamily: 'Helvetica'
-        }}>'Please wait while your project is being created / mined'</h4>
-    }
-  }
-
-  renderContent() {
-    const {finished, stepIndex} = this.state
-    const contentStyle = {
-      margin: '0 16px',
-      overflow: 'hidden'
-    }
-
-    if (finished) {
-      this.submitHandler()
-    }
-
-    return (
-      <div style={contentStyle}>
-        <div>{this.getStepContent(stepIndex)}</div>
-        <div style={{
-          marginTop: 24,
-          marginBottom: 12
-        }}>
-          <FlatButton label="Back" disabled={stepIndex === 0} onTouchTap={this.handlePrev} style={{
-            marginRight: 12
-          }}/>
-          <RaisedButton label={stepIndex === 2
-            ? 'Finish'
-            : 'Next'} primary={true} onTouchTap={this.handleNext}/>
+    renderStepActions(step) {
+      return (
+        <div style={{margin: '12px 0'}}>
+          <RaisedButton
+            label="Next"
+            disableTouchRipple={true}
+            disableFocusRipple={true}
+            primary={true}
+            onTouchTap={this.handleNext}
+            style={{marginRight: 12}}
+          />
+          {step > 0 && (
+            <FlatButton
+              label="Back"
+              disableTouchRipple={true}
+              disableFocusRipple={true}
+              onTouchTap={this.handlePrev}
+            />
+          )}
         </div>
-      </div>
-    )
-  }
+      );
+    }
+
+    renderLastStepAction() {
+      return (
+        <div style={{margin: '12px 0'}}>
+          <RaisedButton
+            label="Next"
+            disableTouchRipple={true}
+            disableFocusRipple={true}
+            primary={true}
+            onTouchTap={this.submitHandler}
+            style={{marginRight: 12}}
+          />
+        </div>
+      );
+    }
 
   render() {
-    const {loading, stepIndex} = this.state
+    const {stepIndex} = this.state
     if (this.state.redirect) {
       return <Redirect push to="/"/>
     }
     return (
-      <div style={{
-        width: '100%',
-        maxWidth: 700,
-        margin: 'auto'
-      }}>
-        <Stepper activeStep={stepIndex}>
+      <div style={{maxWidth: 380, maxHeight: 400, margin: 'auto'}}>
+        <Stepper activeStep={stepIndex} linear={false} orientation="vertical">
           <Step>
-            <StepLabel>Project Name</StepLabel>
+            <StepButton onTouchTap={() => this.setState({stepIndex: 0})}>
+              Give your project a name.
+            </StepButton>
+            <StepContent>
+              <p style={{fontFamily: 'Verdana'}}>
+                It surely needs a name.
+              </p>
+              <TextField floatingLabelText="Name" onChange={this.handleChangeName}/>
+              {this.renderStepActions(0)}
+            </StepContent>
           </Step>
           <Step>
-            <StepLabel>Funding Goal</StepLabel>
+            <StepButton onTouchTap={() => this.setState({stepIndex: 1})}>
+              How much would you like to raise for this project?
+            </StepButton>
+            <StepContent>
+              <p style={{fontFamily: 'Verdana'}}>
+                Amount is in ethers, decimals can be used.
+              </p>
+              <TextField floatingLabelText="Funding Goal" onChange={this.handleChangeEthers}/>
+              {this.renderStepActions(1)}
+            </StepContent>
           </Step>
           <Step>
-            <StepLabel>Duration</StepLabel>
+            <StepButton onTouchTap={() => this.setState({stepIndex: 2})}>
+              How long should the project be open?
+            </StepButton>
+            <StepContent>
+              <p style={{fontFamily: 'Verdana'}}>
+                This is in seconds for testing.
+              </p>
+              <TextField floatingLabelText="Duration" onChange={this.handleChangeSeconds}/>
+              {this.renderLastStepAction(2)}
+            </StepContent>
           </Step>
         </Stepper>
-        <ExpandTransition loading={loading} open={true}>
-          {this.renderContent()}
-        </ExpandTransition>
       </div>
     )
   }
