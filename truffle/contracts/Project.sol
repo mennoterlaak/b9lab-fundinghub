@@ -1,11 +1,11 @@
 pragma solidity ^0.4.11;
 
 contract Project {
-    
+
     struct projectInfo {
         address beneficiary;
         string projectName;
-        uint fundingGoal; 
+        uint fundingGoal;
         uint deadline;
         uint amountRaised;
         bool fundingGoalReached;
@@ -56,9 +56,10 @@ contract Project {
         if(toBeAmount >= projectState.fundingGoal) {
             projectState.balanceOf[contributor] += amount;
             projectState.fundingGoalReached = true;
+            projectState.amountRaised += amount;
             return true;
         }
-    
+
         if(toBeAmount < projectState.fundingGoal) {
             projectState.balanceOf[contributor] += amount;
             projectState.amountRaised += amount;
