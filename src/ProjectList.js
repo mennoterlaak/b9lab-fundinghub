@@ -12,14 +12,11 @@ import {observer} from 'mobx-react'
 
 @observer
 export default class ProjectList extends Component {
-
   componentDidMount() {
-    EthereumClient.fundinghub.deployed().then(instance => {
-      instance.getProjects.call().then(result => {
+      EthereumClient.fundinghub.methods.getProjects().call().then(result => {
         EthereumClient.projectList = result
       })
-    })
-  }
+    }
 
   render() {
     return (

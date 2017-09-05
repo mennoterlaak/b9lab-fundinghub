@@ -9,7 +9,7 @@ import App from './App'
 // Ethereum
 import EthereumClient from './EthereumClientMobx'
 
-EthereumClient.setProviders('http://127.0.0.1:8545')
+EthereumClient.setProviders('ws://localhost:8546')
 EthereumClient.setDefaults()
 
 ReactDOM.render((

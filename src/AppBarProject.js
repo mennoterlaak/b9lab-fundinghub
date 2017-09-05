@@ -18,11 +18,11 @@ import {observer} from 'mobx-react'
 @observer
 export default class AppBarProject extends React.Component {
   componentDidMount() {
-    EthereumClient.web3.eth.getAccounts((err, acc) => {
-      EthereumClient.web3.eth.getBalance(acc[0], (err, result) => {
-        Account.balance = EthereumClient.web3.fromWei(result.toNumber(), 'ether')
-      })
-    })
+    // EthereumClient.web3.eth.getAccounts((err, acc) => {
+    //   EthereumClient.web3.eth.getBalance(acc[0], (err, result) => {
+    //     Account.balance = EthereumClient.web3.fromWei(result.toNumber(), 'ether')
+    //   })
+    // })
   }
   render() {
     return (
